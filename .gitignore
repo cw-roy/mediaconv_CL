@@ -5,9 +5,9 @@
 # Store test video files here
 *test_media/
 # Files to be converted
-convert_media/
-# Store converted files here
-converted_media/
+# convert_media/
+# # Store converted files here
+# converted_media/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
