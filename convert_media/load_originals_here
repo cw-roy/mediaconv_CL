@@ -1,0 +1,11 @@
+Place files to be converted in this folder.  
+Currently supported extensions are:
+
+    ".mp4",
+    ".mkv",
+    ".mov",
+    ".avi",
+    ".3gp",
+    ".flv",
+    ".mk4",
+    ".mpg",
