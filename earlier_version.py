@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 
-## Does not take into account if files to be converted have the same prefix ##
-## Does not take into account if existing converted files exist in converted_media folder ##
-
-"""Converts video files to .mp4 using FFMpeg."""
+""" Converts video files to .mp4 using FFMpeg."""
 
 import os
+from pathlib import Path
 import subprocess
 import time
-from pathlib import Path
 
 
 FILE_EXTENSIONS = (
@@ -31,11 +28,11 @@ def scan_directory():
     log_messages = []
     matching_files = []
 
-    for file_name in os.scandir("convert_media"):
-        if file_name.name.endswith(FILE_EXTENSIONS) and file_name.is_file():
-            matching_files.append(file_name.path)
+    for file_name in os.listdir("convert_media"):
+        if file_name.endswith(FILE_EXTENSIONS):
+            matching_files.append(os.path.join("convert_media", file_name))
         else:
-            log_messages.append(f'"{file_name.name}" does not match a supported file type.')
+            log_messages.append(f'"{file_name}" does not match a supported file type.')
 
     if not matching_files:
         log_messages.append("No matching files found in directory.")
@@ -50,7 +47,7 @@ def convert_files(file_paths, log_file):
     Converted files are saved to the 'converted_media' folder in the same directory as the script.
     """
     log_messages = []
-    converted_folder = Path(__file__).parent / "converted_media"
+    converted_folder = Path(os.path.dirname(__file__)) / "converted_media"
     converted_folder.mkdir(exist_ok=True)
 
     for file_path in file_paths:
@@ -61,23 +58,24 @@ def convert_files(file_paths, log_file):
 
             start_time = time.time()
 
-            completed_process = subprocess.run(
+            subprocess.run(
                 ["ffmpeg", "-i", file_path, "-q:v", "0", output_file_path],
-                capture_output=True,
-                text=True,
                 check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
             )
 
             duration = time.time() - start_time
-            minutes, seconds = divmod(duration, 60)
+            minutes = int(duration // 60)
+            seconds = int(duration % 60)
 
             log_messages.append(
-                f'"{file_name}" was converted to "{output_file_path.name}" in {minutes:.0f}m{seconds:.0f}s.'
+                f'"{file_name}" was converted to "{output_file_path.name}" in {minutes}m{seconds}s.'
             )
 
         except subprocess.CalledProcessError as errors:
             log_messages.append(
-                f'Error converting "{file_path}": {errors.stdout.strip()}'
+                f'Error converting "{file_path}": {errors.output.decode()}'
             )
 
     # Write conversion log to the provided log file
@@ -89,10 +87,12 @@ def main():
     """
     Main function to run the program.
     """
-    converted_folder = Path(__file__).parent / "converted_media"
-    converted_folder.mkdir(exist_ok=True)
+    converted_folder = os.path.join(os.path.dirname(__file__), "converted_media")
+    os.makedirs(converted_folder, exist_ok=True)
 
-    log_file_name = converted_folder / f'conversion_log_{time.strftime("%Y%m%d_%H%M%S")}.log'
+    log_file_name = os.path.join(
+        converted_folder, f'conversion_log_{time.strftime("%Y%m%d_%H%M%S")}.log'
+    )
 
     with open(log_file_name, "w", encoding="utf-8") as log_file:
         matching_files, scan_log_messages = scan_directory()
