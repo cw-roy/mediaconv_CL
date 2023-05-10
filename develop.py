@@ -2,7 +2,7 @@
 
 ## Does not take into account if files to be converted have the same prefix ##
 ## Does not take into account if existing converted files exist in converted_media folder ##
-## To do:  replace spaces with underscores ##
+## To do:  Deal with Windows-style filenames.  Replace spaces in filenames with underscores? ##
 
 """Converts video files to .mp4 using FFMpeg."""
 
