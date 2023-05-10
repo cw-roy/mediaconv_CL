@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 
-## Does not take into account if files to be converted have the same prefix ##
-## Does not take into account if existing converted files exist in converted_media folder ##
-## To do:  replace spaces with underscores ##
-
-"""Converts video files to .mp4 using FFMpeg."""
+"""Converts video files to .mp4 using FFmpeg."""
 
 import os
 import subprocess
@@ -24,15 +20,22 @@ FILE_EXTENSIONS = (
 )
 
 
-def scan_directory():
+def get_matching_files(directory):
     """
-    Scans the "convert_media" directory for files with the specified file extensions.
-    Returns a list of matching file paths.
-    """
-    log_messages = []
-    matching_files = []
+    Scans the specified directory for files with the supported file extensions.
 
-    for file_name in os.scandir("convert_media"):
+    Args:
+        directory (str): The directory to scan.
+
+    Returns:
+        tuple: A tuple containing a list of matching file paths and a list of log messages.
+               If no matching files are found, returns (None, log_messages).
+    """
+
+    matching_files = []
+    log_messages = []
+
+    for file_name in os.scandir(directory):
         if file_name.name.endswith(FILE_EXTENSIONS) and file_name.is_file():
             matching_files.append(file_name.path)
         else:
@@ -50,7 +53,9 @@ def scan_directory():
 def convert_files(file_paths, log_file):
     """
     Converts each file in the provided list to mp4 using FFmpeg.
-    Converted files are saved to the 'converted_media' folder in the same directory as the script.
+        Args:
+        file_paths (list): A list of file paths to convert.
+        log_file (file): The log file to write conversion logs to.
     """
     log_messages = []
     converted_folder = Path(__file__).parent / "converted_media"
@@ -60,7 +65,16 @@ def convert_files(file_paths, log_file):
         try:
             file_name = Path(file_path).name
             file_prefix = Path(file_path).stem
+
+            file_prefix = file_prefix.replace(" ", "_")
+
+            counter = 1
             output_file_path = converted_folder / f"{file_prefix}_converted.mp4"
+            while output_file_path.exists():
+                output_file_path = (
+                    converted_folder / f"{file_prefix}_converted_{counter}.mp4"
+                )
+                counter += 1
 
             start_time = time.time()
 
@@ -83,7 +97,6 @@ def convert_files(file_paths, log_file):
                 f'Error converting "{file_path}": {errors.stdout.strip()}'
             )
 
-    # Write conversion log to the provided log file
     log_file.write("\n".join(log_messages))
     log_file.write("\n")
 
@@ -100,7 +113,7 @@ def main():
     )
 
     with open(log_file_name, "w", encoding="utf-8") as log_file:
-        matching_files, scan_log_messages = scan_directory()
+        matching_files, scan_log_messages = get_matching_files("convert_media")
         log_file.write("\n".join(scan_log_messages))
         log_file.write("\n\n")
 
