@@ -1,9 +1,7 @@
 # Custom items
 
-
-
-# Store test video files here
-my_test_media/
+# Store sample video files here during development
+*test_media/
 # Files to be converted
 convert_media/
 # Store converted files here
