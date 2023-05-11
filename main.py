@@ -8,46 +8,62 @@ import time
 from pathlib import Path
 
 
-FILE_EXTENSIONS = (
-    ".mp4",
-    ".mkv",
-    ".mov",
-    ".avi",
-    ".3gp",
-    ".flv",
-    ".mk4",
-    ".mpg",
-)
-
-
-def get_matching_files(directory):
+def scan_directory():
     """
-    Scans the specified directory for files with the supported file extensions.
-
-    Args:
-        directory (str): The directory to scan.
-
-    Returns:
-        tuple: A tuple containing a list of matching file paths and a list of log messages.
-               If no matching files are found, returns (None, log_messages).
+    Scans the "convert_media" directory for files to be converted to .mp4 using FFmpeg.
+    Returns a list of matching file paths.
     """
-
-    matching_files = []
     log_messages = []
+    matching_files = []
 
-    for file_name in os.scandir(directory):
-        if file_name.name.endswith(FILE_EXTENSIONS) and file_name.is_file():
-            matching_files.append(file_name.path)
+    for file_name in os.scandir("convert_media"):
+        if file_name.is_file():
+            if check_file_convertibility(file_name.path):
+                matching_files.append(file_name.path)
+            else:
+                log_messages.append(
+                    f'"{file_name.name}" cannot be converted to .mp4 using FFmpeg.'
+                )
         else:
-            log_messages.append(
-                f'"{file_name.name}" does not match a supported file type.'
-            )
+            log_messages.append(f'"{file_name.name}" is not a file.')
 
     if not matching_files:
         log_messages.append("No matching files found in directory.")
         return None, log_messages
 
     return matching_files, log_messages
+
+
+def check_file_convertibility(file_path):
+    """
+    Checks if a file can be converted to .mp4 using FFmpeg by probing its format.
+    Returns True if the file is convertible, False otherwise.
+    """
+    try:
+        result = subprocess.run(
+            [
+                "ffprobe",
+                "-v",
+                "error",
+                "-select_streams",
+                "v:0",
+                "-show_entries",
+                "stream=codec_name",
+                "-of",
+                "csv=p=0",
+                file_path,
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        codec_name = result.stdout.strip()
+
+        # FFmpeg can convert any file with a video codec to .mp4
+        return codec_name != ""
+
+    except subprocess.CalledProcessError:
+        return False
 
 
 def convert_files(file_paths, log_file):
@@ -89,7 +105,8 @@ def convert_files(file_paths, log_file):
             minutes, seconds = divmod(duration, 60)
 
             log_messages.append(
-                f'"{file_name}" was converted to "{output_file_path.name}" in {minutes:.0f}m{seconds:.0f}s.'
+                f'"{file_name}" was converted to "{output_file_path.name}" '
+                f'"in {minutes:.0f}m{seconds:.0f}s."'
             )
 
         except subprocess.CalledProcessError as errors:
@@ -113,7 +130,7 @@ def main():
     )
 
     with open(log_file_name, "w", encoding="utf-8") as log_file:
-        matching_files, scan_log_messages = get_matching_files("convert_media")
+        matching_files, scan_log_messages = scan_directory()
         log_file.write("\n".join(scan_log_messages))
         log_file.write("\n\n")
 

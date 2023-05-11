@@ -1,43 +1,58 @@
-# mediaconv_CL:  Command line version of Python FFMpeg media converter
+# Video File Converter using FFmpeg
 
-**Video File Conversion Script**
+This Python script allows you to convert video files to the .mp4 format using FFmpeg. It scans a specified directory for video files, checks their convertibility using FFmpeg, and converts them to .mp4 format if possible.
 
-The video file conversion script is a tool that allows you to convert various video file formats into the popular .mp4 format using the FFmpeg library. It simplifies the process of converting multiple video files in a directory and keeps track of the conversion progress.
+## Prerequisites
 
-**How it works:**
+- **Python 3.x**
+  - I have only tested on **_Linux_** with Python 3.9.5.  (I will eventually test on Windows and later versions of Python.  Feedback welcome.)
+  - In this iteration, only Python built-ins are required.  
+- **FFmpeg**
+  - Tested using FFmpeg 4.2.7-0ubuntu0.1
+- **venv**
+  - I recommend running this in a Python virtual enviroment.  See [Python3 'venv' documentation](https://docs.python.org/3.9/library/venv.html#module-venv) for instructions.
 
-1. The script scans a specified directory called "convert_media" and identifies video files with supported formats such as .mp4, .mkv, .mov, .avi, and more.
+## Setup
 
-2. Once the video files are identified, the script utilizes the FFmpeg library to convert each video file to the .mp4 format. The converted files are saved in a new folder named "converted_media," located in the same directory as the script.
+1. Clone this repository
 
-3. During the conversion process, the script records important information such as the original file name, the converted file name, and the time taken for each conversion.
+2. Make sure you have Python 3.x installed. (`python --version`)
 
-4. Additionally, the script generates a log file named "conversion_log_<timestamp>.log" in the "converted_media" folder. The log file contains details about the conversion process, including any errors that occurred during conversion.
+3. Make sure FFmpeg is installed and accessible via the command line. You can install it using the package manager of your operating system or visit <https://ffmpeg.org/>
 
-**Usage:**
+## Usage
 
-1. Place the video files you want to convert into the "convert_media" folder.
+1. Place the video files you want to convert into a directory named `convert_media` in the same directory as the `main.py` script.
 
-2. Run the script, and it will automatically convert the video files to the .mp4 format using FFmpeg.
+2. Open a terminal and navigate to the directory containing the script.
 
-3. After the conversion process is complete, a log file will be generated in the "converted_media" folder. This log file contains information about each conversion, including any errors encountered.
+3. Run the following command to start the conversion process:
 
-4. The converted video files will be available in the "converted_media" folder for further use.
+   ```bash
+   #!/bin/bash
+   python3 main.py
+   ```
 
----
+4. The script will scan the `convert_media` directory for video files. It will check each file's convertibility and convert eligible files to .mp4 format using FFmpeg.
 
-## Notes
+5. After the conversion process is complete, a log file named `conversion_log_<timestamp>.log` will be created in the `converted_media` directory. The log file contains information about the conversion process, including any errors encountered.
 
-* Tested on Linux only, up to this point.
-* Written in Python 3.9
+6. The converted video files will be saved in the `converted_media` directory.
 
-### Currently supported file types are
+7. You can review the log file to check the status of each conversion.
 
-* ".mp4",
-* ".mkv",
-* ".mov",
-* ".avi",
-* ".3gp",
-* ".flv",
-* ".mk4",
-* ".mpg",
+Note: If the `convert_media` directory does not exist or no eligible video files are found, the script will exit without performing any conversions.
+
+## License
+
+This project is licensed under the MIT License. Feel free to modify and use it according to your needs.
+
+Please note that FFmpeg is a separate software and follows its own licensing terms. Make sure to comply with FFmpeg's licensing when using it for video conversion.
+
+## Acknowledgments
+
+This script was created using Python 3.x and relies on the FFmpeg tool for video conversion. Thanks to the developers of Python and FFmpeg for their fantastic work.
+
+## Disclaimer
+
+The script is provided as-is without any warranty. Use it at your own risk. Make sure to test it thoroughly and backup your data before performing any conversions. The author is not responsible for any loss or damage caused by the usage of this script.
