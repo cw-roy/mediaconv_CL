@@ -77,6 +77,8 @@ def convert_files(file_paths, log_file):
     converted_folder = Path(__file__).parent / "converted_media"
     converted_folder.mkdir(exist_ok=True)
 
+    start_time = time.time()  # Add start time for the entire conversion process
+
     for file_path in file_paths:
         try:
             file_name = Path(file_path).name
@@ -92,8 +94,6 @@ def convert_files(file_paths, log_file):
                 )
                 counter += 1
 
-            start_time = time.time()
-
             subprocess.run(
                 ["ffmpeg", "-i", file_path, "-q:v", "0", output_file_path],
                 capture_output=True,
@@ -101,12 +101,8 @@ def convert_files(file_paths, log_file):
                 check=True,
             )
 
-            duration = time.time() - start_time
-            minutes, seconds = divmod(duration, 60)
-
             log_messages.append(
-                f'"{file_name}" was converted to "{output_file_path.name}" '
-                f'"in {minutes:.0f}m{seconds:.0f}s."'
+                f'"{file_name}" was converted to "{output_file_path.name}"'
             )
 
         except subprocess.CalledProcessError as errors:
@@ -114,6 +110,12 @@ def convert_files(file_paths, log_file):
                 f'Error converting "{file_path}": {errors.stdout.strip()}'
             )
 
+    elapsed_time = time.time() - start_time  # Calculate the elapsed time
+    minutes, seconds = divmod(elapsed_time, 60)
+
+    log_file.write(f"Start Time: {time.ctime(start_time)}\n")
+    log_file.write(f"End Time: {time.ctime(time.time())}\n")
+    log_file.write(f"Elapsed Time: {minutes:.0f}m{seconds:.0f}s\n")
     log_file.write("\n".join(log_messages))
     log_file.write("\n")
 
