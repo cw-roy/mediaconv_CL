@@ -5,13 +5,12 @@
 ## Prerequisites
 
 - **Python 3.x**
-  - I have only tested on **_Linux_** with Python 3.9.5.
-  - However, the most recent version should run on Windows or MacOS and later versions of Python.  Feedback welcome.
+  - Tested on **_Linux_** with Python 3.9.5, but it should work on Windows and MacOS with later Python versions.
   - In this iteration, only Python built-ins are required - no additional modules needed.
 - **FFmpeg**
   - Tested using FFmpeg 4.2.7-0ubuntu0.1
 - **venv**
-  - I recommend running this in a Python virtual enviroment.  See [Python3 'venv' documentation](https://docs.python.org/3.9/library/venv.html#module-venv) for instructions.
+  - I recommend running this in a Python virtual environment. See [Python3 'venv' documentation](https://docs.python.org/3.9/library/venv.html#module-venv) for instructions.
 
 ## Setup
 
@@ -19,36 +18,56 @@
 
 2. Make sure you have Python 3.x installed. (`python --version`)
 
-3. Make sure FFmpeg is installed and accessible via the command line. You can install it using the package manager of your operating system or visit <https://ffmpeg.org/>
+3. Make sure FFmpeg is installed and accessible via the command line. You can install it using the package manager of your operating system or visit [FFmpeg's official website](https://ffmpeg.org/).
 
 ## Usage
 
-Open a terminal or command prompt and navigate to the directory where you saved `mediaconv.py`.
+### Windows
 
-#### Basic Usage
+1. Open Command Prompt (CMD).
 
-To convert video files in an input directory to `.mp4` format in an output directory, use the following command:
+2. Navigate to the directory where you saved `mediaconv.py`.
 
-```bash
-python mediaconv.py -input INPUT_DIRECTORY -output OUTPUT_DIRECTORY
-```
+3. To convert video files in an input directory to `.mp4` format in an output directory, use the following command:
 
-Replace `INPUT_DIRECTORY` with the path to the directory containing your video files and `OUTPUT_DIRECTORY` with the path where you want to save the converted files.
+   ```bash
+   python mediaconv.py -input INPUT_DIRECTORY -output OUTPUT_DIRECTORY
+   ```
 
-#### Console Output
+   Replace `INPUT_DIRECTORY` with the path to the directory containing your video files and `OUTPUT_DIRECTORY` with the path where you want to save the converted files.
 
-By default, the script logs messages to a log file in the output directory. To enable console output in addition to log files, use the `-c` flag:
+4. To enable console output in addition to log files, use the `-c` flag:
 
-```bash
-python mediaconv.py -input INPUT_DIRECTORY -output OUTPUT_DIRECTORY -c
-```
+   ```bash
+   python mediaconv.py -input INPUT_DIRECTORY -output OUTPUT_DIRECTORY -c
+   ```
+
+### Linux and MacOS
+
+1. Open a terminal.
+
+2. Navigate to the directory where you saved `mediaconv.py`.
+
+3. To convert video files in an input directory to `.mp4` format in an output directory, use the following command:
+
+   ```bash
+   python3 mediaconv.py -input INPUT_DIRECTORY -output OUTPUT_DIRECTORY
+   ```
+
+   Replace `INPUT_DIRECTORY` with the path to the directory containing your video files and `OUTPUT_DIRECTORY` with the path where you want to save the converted files.
+
+4. To enable console output in addition to log files, use the `-c` flag:
+
+   ```bash
+   python3 mediaconv.py -input INPUT_DIRECTORY -output OUTPUT_DIRECTORY -c
+   ```
 
 #### Example
 
 Here's an example of how to use the script:
 
 ```bash
-python mediaconv.py -input /path/to/input/videos -output /path/to/output/videos -c
+python3 mediaconv.py -input /path/to/input/videos -output /path/to/output/videos -c
 ```
 
 ### Viewing Logs
@@ -72,3 +91,5 @@ This script was created using Python 3.x and relies on the FFmpeg tool for video
 ## Disclaimer
 
 The script is provided as-is without any warranty. Use it at your own risk. Make sure to test it thoroughly and backup your data before performing any conversions. The author is not responsible for any loss or damage caused by the usage of this script.
+
+Feel free to copy and paste this updated README.md into your project's documentation.
