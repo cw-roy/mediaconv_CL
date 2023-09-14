@@ -1,12 +1,13 @@
 # Video File Converter using FFmpeg
 
-This Python script allows you to convert video files to the .mp4 format using FFmpeg. It scans a specified directory for video files, checks their convertibility using FFmpeg, and converts them to .mp4 format if possible.
+`mediaconv.py` is a Python script that converts video files to the .mp4 format using FFmpeg. It's a command-line tool designed to simplify the conversion process. Below are instructions on how to use it effectively.
 
 ## Prerequisites
 
 - **Python 3.x**
-  - I have only tested on **_Linux_** with Python 3.9.5.  (I will eventually test on Windows and later versions of Python.  Feedback welcome.)
-  - In this iteration, only Python built-ins are required.  
+  - I have only tested on **_Linux_** with Python 3.9.5.
+  - However, the most recent version should run on Windows or MacOS and later versions of Python.  Feedback welcome.
+  - In this iteration, only Python built-ins are required - no additional modules needed.
 - **FFmpeg**
   - Tested using FFmpeg 4.2.7-0ubuntu0.1
 - **venv**
@@ -22,26 +23,41 @@ This Python script allows you to convert video files to the .mp4 format using FF
 
 ## Usage
 
-1. Place the video files you want to convert into a directory named `convert_media` in the same directory as the `main.py` script.
+Open a terminal or command prompt and navigate to the directory where you saved `mediaconv.py`.
 
-2. Open a terminal and navigate to the directory containing the script.
+#### Basic Usage
 
-3. Run the following command to start the conversion process:
+To convert video files in an input directory to `.mp4` format in an output directory, use the following command:
 
-   ```bash
-   #!/bin/bash
-   python3 main.py
-   ```
+```bash
+python mediaconv.py -input INPUT_DIRECTORY -output OUTPUT_DIRECTORY
+```
 
-4. The script will scan the `convert_media` directory for video files. It will check each file's convertibility and convert eligible files to .mp4 format using FFmpeg.
+Replace `INPUT_DIRECTORY` with the path to the directory containing your video files and `OUTPUT_DIRECTORY` with the path where you want to save the converted files.
 
-5. After the conversion process is complete, a log file named `conversion_log_<timestamp>.log` will be created in the `converted_media` directory. The log file contains information about the conversion process, including any errors encountered.
+#### Console Output
 
-6. The converted video files will be saved in the `converted_media` directory.
+By default, the script logs messages to a log file in the output directory. To enable console output in addition to log files, use the `-c` flag:
 
-7. You can review the log file to check the status of each conversion.
+```bash
+python mediaconv.py -input INPUT_DIRECTORY -output OUTPUT_DIRECTORY -c
+```
 
-Note: If the `convert_media` directory does not exist or no eligible video files are found, the script will exit without performing any conversions.
+#### Example
+
+Here's an example of how to use the script:
+
+```bash
+python mediaconv.py -input /path/to/input/videos -output /path/to/output/videos -c
+```
+
+### Viewing Logs
+
+After the conversion process is complete, you can find a log file named `conversion_log_<timestamp>.log` in your output directory. You can open this file to review conversion details and any error messages.
+
+### Troubleshooting
+
+If you encounter any issues or errors during the conversion process, check the log file for error messages. Common issues may include missing FFmpeg installation or unsupported video formats.
 
 ## License
 
