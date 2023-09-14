@@ -24,10 +24,11 @@ Example:
 Dependencies:
     - FFmpeg: Make sure FFmpeg is installed and available in your system's PATH.
 
-Author: [Your Name]
-Date: [Date]
+Author: [Curtis Roy]
+Date: [14 September 2023]
 
-For more information and updates, visit the project repository: [Link to Repository]
+For more information and updates, visit the project repository:
+[https://github.com/cw-roy/mediaconv_CL]
 """
 
 import argparse
