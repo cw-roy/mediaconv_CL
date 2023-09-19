@@ -40,9 +40,26 @@ import sys
 import time
 from pathlib import Path
 
+def validate_directories(input_directory, output_directory):
+    """
+    Validate the existence of input and output directories.
+
+    :param input_directory: The path to the input directory.
+    :param output_directory: The path to the output directory.
+    :raises FileNotFoundError: If either input or output directory does not exist.
+    """
+    if not os.path.exists(input_directory):
+        raise FileNotFoundError(f"Input directory '{input_directory}' not found.")
+    if not os.path.exists(output_directory):
+        raise FileNotFoundError(f"Output directory '{output_directory}' not found.")
 
 def setup_logger(log_directory, enable_console=False):
-    """Set up the logger to write logs to a file and optionally to the console."""
+    """Set up the logger to write logs to a file and optionally to the console.
+    
+    :param log_directory: The directory where log files will be saved.
+    :param enable_console: Enable console output for logging if True.
+    :return: The path to the log file.
+    """
     current_time = time.strftime("%Y%m%d_%H%M%S")
     # Determine the log file extension based on the platform
     if sys.platform.startswith("win"):
@@ -50,8 +67,9 @@ def setup_logger(log_directory, enable_console=False):
     else:
         log_file_extension = ".log"
 
-    log_file_name = f"{current_time}_conversion_log{log_file_extension}"
-    log_file_path = os.path.join(log_directory, log_file_name)
+    log_file_path = os.path.join(
+        log_directory, f"{current_time}_conversion_log{log_file_extension}"
+    )
 
     logging.basicConfig(
         filename=log_file_path,
@@ -76,7 +94,12 @@ def setup_logger(log_directory, enable_console=False):
 
 
 def scan_directory(input_directory):
-    """Scans the input directory for files to be converted to .mp4 using FFmpeg."""
+    """
+    Scans the input directory for files to be converted to .mp4 using FFmpeg.
+
+    :param input_directory: The directory to scan for video files.
+    :return: A list of matching file paths and a list of log messages.
+    """
     log_messages = []
     matching_files = []
 
@@ -111,6 +134,9 @@ def check_file_convertibility(file_path):
     format with ffprobe. Returns a tuple (result, log_message) where result is
     True if the file is convertible, False otherwise, and log_message contains
     error or success message.
+
+    :param file_path: The path of the file to check for convertibility.
+    :return: A tuple (result, log_message) indicating the result and a log message.
     """
     try:
         result = subprocess.run(
@@ -162,7 +188,12 @@ def get_file_size(file_size):
 
 
 def convert_log_setup(output_directory):
-    """Set up the logger for the conversion process and return the log file path."""
+    """
+    Set up the logger for the conversion process and return the log file path.
+
+    :param output_directory: The directory where log files will be saved.
+    :return: The path to the log file.
+    """
     log_file_name = (
         f'{output_directory}/conversion_log_{time.strftime("%Y%m%d_%H%M%S")}.log'
     )
@@ -182,7 +213,13 @@ def convert_log_setup(output_directory):
 
 
 def output_path(converted_folder, file_prefix):
-    """Calculate the output file path based on the given file prefix and converted folder."""
+    """
+    Calculate the output file path based on the given file prefix and converted folder.
+
+    :param converted_folder: The folder where converted files are stored.
+    :param file_prefix: The prefix to be added to the output file name.
+    :return: The calculated output file path.
+    """
     counter = 1
     output_file_path = f"{converted_folder}/{file_prefix}_converted_{counter}.mp4"
     while os.path.exists(output_file_path):
@@ -192,7 +229,12 @@ def output_path(converted_folder, file_prefix):
 
 
 def execute_ffmpeg(input_file, output_file):
-    """Run FFmpeg to convert an input file to .mp4 format."""
+    """
+    Run FFmpeg to convert an input file to .mp4 format.
+    
+    :param input_file: The path to the input file.
+    :param output_file: The path to the output .mp4 file.
+    """
     system_platform = platform.system()
 
     # Use platform-specific FFmpeg executable name
@@ -213,7 +255,15 @@ def execute_ffmpeg(input_file, output_file):
 def log_info(
     file_name, original_file_size, output_file_path, new_file_size, start_time
 ):
-    """Log information about each conversion, such as file names, sizes, and conversion time."""
+    """
+    Log information about each conversion.
+
+    :param file_name: The name of the input file.
+    :param original_file_size: The size of the original input file.
+    :param output_file_path: The path to the converted output file.
+    :param new_file_size: The size of the converted output file.
+    :param start_time: The start time of the conversion process.
+    """
     elapsed_time = time.time() - start_time  # Calculate the elapsed time
     minutes, seconds = divmod(elapsed_time, 60)
 
@@ -231,7 +281,13 @@ def log_info(
 
 
 def summary_info(start_time, original_total_size, final_total_size):
-    """Log summary information about the entire conversion process."""
+    """
+    Log summary information about the entire conversion process.
+
+    :param start_time: The start time of the conversion process.
+    :param original_total_size: The total size of all original input files.
+    :param final_total_size: The total size of all converted output files.
+    """
     elapsed_time = time.time() - start_time  # Calculate the elapsed time
     minutes, seconds = divmod(elapsed_time, 60)
 
@@ -250,13 +306,16 @@ def convert_files(file_paths, output_directory):
     """Converts each file in the input directory to .mp4, using FFmpeg."""
     converted_folder = output_directory
 
-    start_time = time.time()  # Add start time for the entire conversion process
-
     original_total_size = 0
     final_total_size = 0
 
+    total_start_time = time.time()  # Start time for the entire batch
+
     for file_path in file_paths:
         try:
+            # Create a new start time for each file conversion
+            start_time = time.time()
+
             file_name = Path(file_path).name
             file_prefix = Path(file_path).stem
 
@@ -288,9 +347,8 @@ def convert_files(file_paths, output_directory):
             log_file = logging.getLogger()  # Get the logger again
             log_file.error('Error converting "%s": %s\n', file_path, err)
 
-    # After processing all files, log the summary
-    summary_info(start_time, original_total_size, final_total_size)
-
+    # Log the summary with the correct total elapsed time
+    summary_info(total_start_time, original_total_size, final_total_size)
 
 def main():
     """Main function to run the program."""
@@ -311,6 +369,9 @@ def main():
     input_directory = args.input
     output_directory = args.output
 
+    # Validate input and output directories
+    validate_directories(input_directory, output_directory)
+
     # Call setup_logger with the log directory path and the enable_console flag
     log_file_name = setup_logger(output_directory, enable_console=args.console)
 
@@ -329,7 +390,6 @@ def main():
     convert_files(matching_files, output_directory)
 
     print(f'\nConversion complete. Log file saved to "{log_file_name}".\n')
-
 
 if __name__ == "__main__":
     main()

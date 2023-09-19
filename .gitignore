@@ -1,5 +1,6 @@
 # Custom items
-develop.py
+scratchpad*
+.DS_Store
 
 # Store sample video files here during development
 *test_media/
