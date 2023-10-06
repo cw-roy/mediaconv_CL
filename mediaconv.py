@@ -29,7 +29,7 @@ Date: [14 September 2023]
 
 For more information and updates, visit the project repository:
 [https://github.com/cw-roy/mediaconv_CL]
-"""
+"""  # noqa: E501
 
 import argparse
 import logging
@@ -39,6 +39,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+
 
 def validate_directories(input_directory, output_directory):
     """
@@ -53,9 +54,10 @@ def validate_directories(input_directory, output_directory):
     if not os.path.exists(output_directory):
         raise FileNotFoundError(f"Output directory '{output_directory}' not found.")
 
+
 def setup_logger(log_directory, enable_console=False):
     """Set up the logger to write logs to a file and optionally to the console.
-    
+
     :param log_directory: The directory where log files will be saved.
     :param enable_console: Enable console output for logging if True.
     :return: The path to the log file.
@@ -165,14 +167,14 @@ def check_file_convertibility(file_path):
             error_output = result.stderr.strip()
             return (
                 False,
-                f'Problem found in "{file_path}":\n{error_output}.\nFile will not be processed.\n',
+                f'Problem found in "{file_path}":\n{error_output}.\nFile will not be processed.\n',  # noqa: E501
             )
 
     except subprocess.CalledProcessError as errors:
         error_output = errors.stderr.strip()
         return (
             False,
-            f'Error checking "{file_path}":\n{error_output}.\nFile will not be processed.\n',
+            f'Error checking "{file_path}":\n{error_output}.\nFile will not be processed.\n',  # noqa: E501
         )
 
 
@@ -231,7 +233,7 @@ def output_path(converted_folder, file_prefix):
 def execute_ffmpeg(input_file, output_file):
     """
     Run FFmpeg to convert an input file to .mp4 format.
-    
+
     :param input_file: The path to the input file.
     :param output_file: The path to the output .mp4 file.
     """
@@ -242,7 +244,33 @@ def execute_ffmpeg(input_file, output_file):
 
     try:
         subprocess.run(
+            # Normal optimized command for straightforward file conversion.
             [ffmpeg_executable, "-i", input_file, "-q:v", "0", output_file],
+            # Section below is for specialty situation where non-standard compression
+            # causes an otherwise normal .mp4 to not play. Increases file size
+            # significantly. Leave commented out for normal use.
+            # [
+            #     ffmpeg_executable,
+            #     "-vcodec",
+            #     "mpeg4",
+            #     "-b:v",
+            #     "7561k",
+            #     "-qscale:v",
+            #     "2",
+            #     "-acodec",
+            #     "aac",
+            #     "-ac",
+            #     "2",
+            #     "-async",
+            #     "1",
+            #     "-strict",
+            #     "experimental",
+            #     output_file,
+            #     "-threads",
+            #     "0",
+            #     "-i",
+            #     input_file,
+            # ],
             capture_output=True,
             text=True,
             check=True,
@@ -350,6 +378,7 @@ def convert_files(file_paths, output_directory):
     # Log the summary with the correct total elapsed time
     summary_info(total_start_time, original_total_size, final_total_size)
 
+
 def main():
     """Main function to run the program."""
     parser = argparse.ArgumentParser(
@@ -390,6 +419,7 @@ def main():
     convert_files(matching_files, output_directory)
 
     print(f'\nConversion complete. Log file saved to "{log_file_name}".\n')
+
 
 if __name__ == "__main__":
     main()
