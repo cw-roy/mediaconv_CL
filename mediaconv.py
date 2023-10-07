@@ -218,16 +218,28 @@ def output_path(converted_folder, file_prefix):
     """
     Calculate the output file path based on the given file prefix and converted folder.
 
+    This function generates a unique output file path for converted files in the
+    specified folder. If it's the first conversion, the file path will be
+    "{converted_folder}/{file_prefix}.mp4". For subsequent conversions, an incremented
+    tag will be added to the file prefix
+    (e.g., "{converted_folder}/{file_prefix}_{counter}.mp4").
+
     :param converted_folder: The folder where converted files are stored.
     :param file_prefix: The prefix to be added to the output file name.
     :return: The calculated output file path.
     """
-    counter = 1
-    output_file_path = f"{converted_folder}/{file_prefix}_converted_{counter}.mp4"
-    while os.path.exists(output_file_path):
-        output_file_path = f"{converted_folder}/{file_prefix}_converted_{counter}.mp4"
+    counter = 0  # Initialize the counter to 0
+    while True:
+        if counter == 0:
+            output_file_path = f"{converted_folder}/{file_prefix}_converted.mp4"
+        else:
+            output_file_path = (
+                f"{converted_folder}/{file_prefix}_converted_{counter}.mp4"
+            )
+        if not os.path.exists(output_file_path):
+            return output_file_path
+
         counter += 1
-    return output_file_path
 
 
 def execute_ffmpeg(input_file, output_file):
